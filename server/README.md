@@ -17,8 +17,8 @@ Build
 ```bash
 mkdir -p project/src
 cd project/src
-git clone --recursive https://github.com/ProjectModuleAngelaBaby/ProjectModuleAB_Server moduleab_server
-cd moduleab_server
+#git clone --recursive https://github.com/ProjectModuleAngelaBaby/ProjectModuleAB_Server moduleab_server
+#cd moduleab_server
 go get -v
 go get github.com/beego/bee
 export PATH="$GOPATH/bin:$PATH"

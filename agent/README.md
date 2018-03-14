@@ -7,9 +7,9 @@ Build
 ```bash
 mkdir -p project/src
 cd project/src
-git clone --recursive https://github.com/ProjectModuleAngelaBaby/ProjectModuleAB_Server moduleab_server
-git clone --recursive https://github.com/ProjectModuleAngelaBaby/ProjectModuleAB_Agent moduleab_agent
-cd moduleab_agent
+#git clone --recursive https://github.com/ProjectModuleAngelaBaby/ProjectModuleAB_Server moduleab_server
+#git clone --recursive https://github.com/ProjectModuleAngelaBaby/ProjectModuleAB_Agent moduleab_agent
+#cd moduleab_agent
 go get -v
 make  # you will get 'moduleab_agent.tar.gz'
 ```

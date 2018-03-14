@@ -1,0 +1,14 @@
+        <div class="modal-header">
+            <h3 class="modal-title">删除“{{modalDeleteObjName}}”？</h3>
+        </div>
+        <div class="modal-body">
+            <i class="fa fa-warning fa-fw"></i> 你真的要删除 {{modalDeleteObjName}} 吗？
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger" ng-click="doDelete()">
+                <i class="fa fa-trash fa-fw"></i> 删除
+            </button>
+            <button class="btn btn-default" ng-click="cancel()">
+                <i class="fa fa-remove fa-fw"></i> 取消
+            </button>
+        </div>

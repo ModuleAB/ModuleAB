@@ -1,0 +1,69 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">应用集</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<!-- Modal -->
+<script type="text/ng-template" id="appSetModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{type}}应用集</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group input-group" uib-tooltip="名称">
+              <span class="input-group-addon">
+                <i class="fa fa-edit fa-fw"></i></span>
+              <input ng-model="appSet.name" class="form-control" placeholder="名称"/>
+            </div>
+            <div class="form-group input-group" uib-tooltip="描述">
+              <span class="input-group-addon">
+                <i class="fa fa-tags fa-fw"></i>
+              </span>
+              <input ng-model="appSet.description" class="form-control" placeholder="描述"/>
+            </div>
+            <div class="notify fadein" ng-class="modalInfoFadein">
+              <div class="alert alert-warning">
+                <i class="fa fa-warning fa-fw"></i> {{modalInfoMsg}}
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="doJob()">
+                <i class="fa fa-fw" ng-class="jobType"></i> {{job}}
+            </button>
+            <button class="btn btn-default" ng-click="cancel()">
+                <i class="fa fa-remove fa-fw"></i> 取消
+            </button>
+        </div>
+</script>
+
+<div class="row">
+    <button type="button" class="btn btn-primary" ng-click="appSetEdit('new')">
+        <i class="fa fa-plus fa-fw"></i> 新增
+    </button>
+    <table class="col-lg-12 table table-striped">
+        <thead>
+            <th></th>
+            <th>名称</th>
+            <th>描述</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr ng-repeat="appSet in appSets">
+                <td class="table-td-padding"></td>
+                <td class="table-td-padding">{{appSet.name}}</td>
+                <td class="table-td-padding">{{appSet.description}}</td>
+                <td class="table-td-padding" style="text-align:right">
+                    <button type="button" class="btn btn-default btn-xs" ng-click="appSetEdit('modify', appSet)">
+                        <i class="fa fa-pencil fa-fw"></i> 修改
+                    </button>
+                    <button type="button" class="btn btn-danger btn-xs" ng-click="delete(appSet)">
+                        <i class="fa fa-trash fa-fw"></i> 删除
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

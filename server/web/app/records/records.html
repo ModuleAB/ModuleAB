@@ -1,0 +1,211 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">备份记录</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<!-- Modal -->
+<script type="text/ng-template" id="recordModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">查找</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group input-group" uib-tooltip="主机名">
+              <span class="input-group-addon">
+                <i class="fa fa-laptop fa-fw"></i></span>
+              <select ng-model="selectedHost" class="form-control" ng-options="host.name as host.name for host in hosts"></select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="应用集">
+              <span class="input-group-addon">
+                <i class="fa fa-cogs fa-fw"></i>
+              </span>
+              <select ng-model="selectedAppSet" class="form-control" ng-options="appSet.name as appSet.name for appSet in appSets"></select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="备份集">
+              <span class="input-group-addon">
+                <i class="fa fa-book fa-fw"></i>
+              </span>
+              <select class="form-control" ng-model="selectedBackupSet" ng-options="backupSet.name as backupSet.name for backupSet in backupSets"></select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="路径">
+              <span class="input-group-addon">
+                <i class="fa fa-folder-open-o fa-fw"></i>
+              </span>
+              <select class="form-control" ng-model="selectedPath" ng-options="path.path as path.path for path in paths"></select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="文件名">
+              <span class="input-group-addon">
+                <i class="fa fa-folder-open-o fa-fw"></i>
+              </span>
+              <input class="form-control" ng-model="filename" placeholder="文件名"/>
+            </div>
+
+            <div class="form-group input-group" uib-tooltip="备份时间">
+                <span class="input-group-addon">从</span>
+                <input class="form-control" ng-model="btStart"
+                  uib-datepicker-popup
+                  datepicker-options="datePickerOptions"
+                  clear-text="清除" close-text="完成" current-text="今天"
+                  is-open="btStartP" type="date"/>
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" ng-click="btStartP=true">
+                    <i class="fa fa-calendar fa-fw"></i>
+                  </button>
+                </span>
+                <span class="input-group-btn">&nbsp;</span>
+                <span class="input-group-addon">到</span>
+                <input class="form-control" ng-model="btEnd"
+                  uib-datepicker-popup
+                  datepicker-options="datePickerOptions"
+                  clear-text="清除" close-text="完成" current-text="今天"
+                  is-open="btEndP" type="date"/>
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" ng-click="btEndP=true">
+                    <i class="fa fa-calendar fa-fw"></i>
+                  </button>
+                </span>
+            </div>
+            <div class="form-group input-group" uib-tooltip="归档时间">
+                <span class="input-group-addon">从</span>
+                <input class="form-control" ng-model="atStart"
+                  uib-datepicker-popup
+                  datepicker-options="datePickerOptions"
+                  clear-text="清除" close-text="完成" current-text="今天"
+                  is-open="atStartP" type="date"/>
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" ng-click="atStartP=true">
+                    <i class="fa fa-calendar fa-fw"></i>
+                  </button>
+                </span>
+                <span class="input-group-btn">&nbsp;</span>
+                <span class="input-group-addon">到</span>
+                <input class="form-control" ng-model="atEnd"
+                  uib-datepicker-popup
+                  datepicker-options="datePickerOptions"
+                  clear-text="清除" close-text="完成" current-text="今天"
+                  is-open="atEndP" type="date"/>
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" ng-click="atEndP=true">
+                    <i class="fa fa-calendar fa-fw"></i>
+                  </button>
+                </span>
+            </div>
+            <div class="form-group input-group" uib-tooltip="查询数量">
+                <span class="input-group-addon">
+                  <i class="fa fa-lock fa-fw"></i>
+                </span>
+                <input type="number" class="form-control" ng-model="limit"/>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="doJob()">
+                <i class="fa fa-search fa-fw"></i> 查找
+            </button>
+            <button class="btn btn-default" ng-click="cancel()">
+                <i class="fa fa-remove fa-fw"></i> 取消
+            </button>
+        </div>
+</script>
+<script type="text/ng-template" id="recover.html">
+  <div class="modal-header">
+    <h3 class="modal-title">恢复 {{record.path.path}}/{{record.filename}} ？</h3>
+  </div>
+  <div class="modal-body">
+    <p>
+      <i class="fa fa-question-circle fa-fw"></i> 将 {{record.path.path}}/{{record.filename}} 恢复到 {{record.host.name}} 吗？
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="doJob()">
+      <i class="fa fa-download fa-fw"></i> 恢复
+    </button>
+    <button class="btn btn-default" ng-click="cancel()">
+      <i class="fa fa-remove fa-fw"></i> 取消
+    </button>
+  </div>
+</script>
+
+<div class="row">
+    <button type="button" class="btn btn-primary" ng-click="recordEdit()">
+        <i class="fa fa-search fa-fw"></i> 查找
+    </button>
+    <table class="col-lg-12 table table-striped">
+        <thead>
+            <th></th>
+            <th ng-click="orderBy('name')">
+              主机名 <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th ng-click="orderBy('backupset.name')">
+              所属备份集 <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th ng-click="orderBy('appset.name')">
+              所属应用集 <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th ng-click="orderBy('path.path')">
+              文件路径 <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th ng-click="orderBy('type')">
+              类型 <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th>归档 ID</th>
+            <th ng-click="orderBy('-backuptime')">
+              备份时间 <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th ng-click="orderBy('-archivedtime')">
+              归档时间 <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr ng-repeat="record in recordSlice | orderBy: order">
+                <td class="table-td-padding"></td>
+                <td class="table-td-padding">{{record.host.name}}</td>
+                <td class="table-td-padding">{{record.backupset.name}}</td>
+                <td class="table-td-padding">{{record.appset.name}}</td>
+                <td class="table-td-padding">
+                  {{record.path.path}}/{{record.filename}}
+                </td>
+                <td class="table-td-padding">
+                  {{types[record.type]}}
+                </td>
+                <td class="table-td-padding">{{record.archiveid.slice(0, 16)}}</td>
+                <td class="table-td-padding">{{
+                  record.backuptime.indexOf('+') != -1?
+                    record.backuptime.replace('+', '-'):
+                      record.backuptime.indexOf('-')!=-1?
+                        record.backuptime.replace('-', '+'):
+                          record.backuptime
+                  |date:'yyyy-MM-dd HH:mm:ss':'Z'}}</td>
+                <td class="table-td-padding">{{
+                  record.archivedtime=='0001-01-01T00:00:00Z'?
+                    '-':
+                      record.archivedtime.indexOf('+') != -1?
+                        record.archivedtime.replace('+', '-'):
+                          record.archivedtime.indexOf('-') != -1?
+                            record.archivedtime.replace('-', '+'):
+                              record.archivedtime
+                  |date: 'yyyy-MM-dd HH:mm:ss':'Z'}}</td>
+                <td style="text-align:right">
+                    <button type="button" class="btn btn-default btn-xs" ng-click="recover(record)">
+                        <i class="fa fa-download fa-fw"></i> 恢复
+                    </button>
+                    <button type="button" class="btn btn-danger btn-xs" ng-click="delete(record)">
+                        <i class="fa fa-trash fa-fw"></i> 删除
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div ng-show="records.length > numPerPage" class="align-to-right">
+        <uib-pagination
+          total-items="records.length"
+          max-size="5"
+          previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
+          ng-model="currentPage"
+          boundary-links="true"
+          items-per-page="numPerPage"
+          ></uib-pagination>
+    </div>
+</div>

@@ -1,0 +1,82 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">监控路径</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<!-- Modal -->
+<script type="text/ng-template" id="pathModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{type}}监控路径</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group input-group" uib-tooltip="路径">
+              <span class="input-group-addon">
+                <i class="fa fa-folder fa-fw"></i></span>
+              <input ng-model="path.path" class="form-control" placeholder="路径"/>
+            </div>
+            <div class="form-group input-group" uib-tooltip="备份集">
+              <span class="input-group-addon">
+                <i class="fa fa-book fa-fw"></i>
+              </span>
+              <select ng-model="backupSetId" class="form-control" ng-options="backupSet.id as backupSet.name for backupSet in backupSets">
+              </select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="应用集">
+              <span class="input-group-addon">
+                <i class="fa fa-cogs fa-fw"></i>
+              </span>
+              <select multiple ng-model="appSetIds" class="form-control" ng-options="appSet.id as appSet.name for appSet in appSets">
+              </select>
+            </div>
+
+            <div class="notify fadein" ng-class="modalInfoFadein">
+              <div class="alert alert-warning">
+                <i class="fa fa-warning fa-fw"></i> {{modalInfoMsg}}
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="doJob()">
+                <i class="fa fa-fw" ng-class="jobType"></i> {{job}}
+            </button>
+            <button class="btn btn-default" ng-click="cancel()">
+                <i class="fa fa-remove fa-fw"></i> 取消
+            </button>
+        </div>
+</script>
+
+<div class="row">
+    <button type="button" class="btn btn-primary" ng-click="pathEdit('new')">
+        <i class="fa fa-plus fa-fw"></i> 新增
+    </button>
+    <table class="col-lg-12 table table-striped">
+        <thead>
+            <th></th>
+            <th>路径</th>
+            <th>所属备份集</th>
+            <th>所属应用集</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr ng-repeat="path in paths | orderBy:'path.path'">
+                <td class="table-td-padding"></td>
+                <td class="table-td-padding">{{path.path}}</td>
+                <td class="table-td-padding">{{path.backupset.name}}</td>
+                <td class="table-td-padding">
+                  <span ng-repeat="appset in path.appset">{{appset.name}}, </span>
+                </td>
+                <td style="text-align:right">
+                    <button type="button" class="btn btn-default btn-xs" ng-click="pathEdit('modify', path)">
+                        <i class="fa fa-pencil fa-fw"></i> 修改
+                    </button>
+                    <button type="button" class="btn btn-danger btn-xs" ng-click="delete(path)">
+                        <i class="fa fa-trash fa-fw"></i> 删除
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

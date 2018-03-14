@@ -1,0 +1,8 @@
+language: node_js
+
+before_script:
+  - npm install -g bower
+  - sleep 1
+
+script:
+  - bower i

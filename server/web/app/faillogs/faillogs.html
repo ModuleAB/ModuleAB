@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">备份失败日志</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<div class="row">
+  <div class="row">
+    <div class="col-md-3">
+    <input class="form-control" placeholder="主机名" ng-model="query.host">
+    </div>
+    <div class="col-md-3">
+    <input class="form-control" placeholder="日期（2017-08-31）" ng-model="query.date">
+    </div>
+    <div class="col-md-1">
+    <button type="button" class="btn btn-primary" ng-click="recordsGet(query)">
+        <i class="fa fa-search fa-fw"></i> 查询
+    </button>
+  </div>
+  </div>
+    <table class="col-lg-12 table table-striped">
+        <thead>
+            <th></th>
+            <th>
+              时间
+            </th>
+            <th>
+              主机名
+            </th>
+            <th>
+              错误信息
+            </th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr ng-repeat="log in failLogs">
+                <td class="table-td-padding"></td>
+                <td class="table-td-padding">{{
+                    log.time=='0001-01-01T00:00:00Z'?
+                      '-':
+                        log.time.indexOf('+') != -1?
+                          log.time.replace('+', '-'):
+                            log.time.indexOf('-') != -1?
+                              log.time.replace('-', '+'):
+                                log.time
+                    |date: 'yyyy-MM-dd HH:mm:ss':'Z'}}</td>
+                <td class="table-td-padding">{{log.host.name}} ({{log.host.ip}})</td>
+                <td class="table-td-padding">{{log.log}}</td>
+                <td style="text-align:right">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div ng-show="failLogs.length > numPerPage" class="align-to-right">
+        <uib-pagination
+          total-items="failLogs.length"
+          max-size="5"
+          previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
+          ng-model="currentPage"
+          boundary-links="true"
+          items-per-page="numPerPage"
+          ></uib-pagination>
+    </div>
+</div>

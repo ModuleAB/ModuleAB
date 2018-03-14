@@ -1,0 +1,172 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">服务端策略</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<!-- Modal -->
+<script type="text/ng-template" id="policyModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{type}}策略</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group input-group" uib-tooltip="名称">
+              <span class="input-group-addon">
+                <i class="fa fa-edit fa-fw"></i></span>
+              <input ng-model="policy.name" class="form-control" placeholder="名称"/>
+            </div>
+            <div class="form-group input-group" uib-tooltip="描述">
+              <span class="input-group-addon">
+                <i class="fa fa-tags fa-fw"></i>
+              </span>
+              <input ng-model="policy.description" class="form-control" placeholder="描述"/>
+            </div>
+            <div class="form-group input-group" uib-tooltip="所属备份集">
+              <span class="input-group-addon">
+                <i class="fa fa-book fa-fw"></i>
+              </span>
+              <select ng-model="selectedBackupSet" class="form-control" ng-options="backupSet.id as backupSet.name for backupSet in backupSets"></select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="所属应用集">
+              <span class="input-group-addon">
+                <i class="fa fa-cogs fa-fw"></i>
+              </span>
+              <select multiple ng-model="selectedAppSets" class="form-control" ng-options="appSet.id as appSet.name for appSet in appSets"></select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="绑定主机">
+              <span class="input-group-addon">
+                <i class="fa fa-laptop fa-fw"></i>
+              </span>
+              <select multiple ng-model="selectedHosts" class="form-control" ng-options="host.id as host.name for host in hosts"></select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="绑定路径">
+              <span class="input-group-addon">
+                <i class="fa fa-folder fa-fw"></i>
+              </span>
+              <select multiple ng-model="selectedPaths" class="form-control" ng-options="path.id as path.path for path in paths"></select>
+            </div>
+
+            <div class="form-group input-group" uib-tooltip="起始时间">
+              <span class="input-group-addon">
+                <i class="fa fa-clock-o fa-fw"></i></span>
+              <input type="number" ng-model="startTime" class="form-control" placeholder="起始时间（0 为当前）"/>
+              <span class="input-group-addon">天前</span>
+            </div>
+
+            <div class="form-group input-group" uib-tooltip="结束时间">
+              <span class="input-group-addon">
+                <i class="fa fa-clock-o fa-fw"></i></span>
+              <input type="number" ng-model="endTime" class="form-control" placeholder="结束时间（-1 为不限制）"/>
+              <span class="input-group-addon">天前</span>
+            </div>
+
+            <div class="form-group input-group" uib-tooltip="目标类型">
+              <span class="input-group-addon">
+                <i class="fa fa-table fa-fw"></i>
+              </span>
+              <select ng-model="policy.target" class="form-control" ng-options="(+k) as v for (k, v) in types"></select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="执行动作">
+              <span class="input-group-addon">
+                <i class="fa fa-wrench fa-fw"></i>
+              </span>
+              <select ng-model="policy.action" class="form-control" ng-options="(+k) as v for (k, v) in actions"></select>
+            </div>
+
+            <div class="form-group input-group" ng-show="policy.action == 2" uib-tooltip="删除间隔（任务类型为删除时生效）">
+              <span class="input-group-addon">
+                <i class="fa fa-clock-o fa-fw"></i></span>
+              <input type="number" ng-model="step" class="form-control" placeholder="删除间隔（0 为全部保留，-1 为全部删除）"/>
+              <span class="input-group-addon">天</span>
+            </div>
+
+            <div class="notify fadein" ng-class="modalInfoFadein">
+              <div class="alert alert-warning">
+                <i class="fa fa-warning fa-fw"></i> {{modalInfoMsg}}
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="doJob()">
+                <i class="fa fa-fw" ng-class="jobType"></i> {{job}}
+            </button>
+            <button class="btn btn-default" ng-click="cancel()">
+                <i class="fa fa-remove fa-fw"></i> 取消
+            </button>
+        </div>
+</script>
+
+<div class="row">
+    <button type="button" class="btn btn-primary" ng-click="policyEdit('new')">
+        <i class="fa fa-plus fa-fw"></i> 新增
+    </button>
+    <table class="col-lg-12 table table-striped">
+        <thead>
+            <th></th>
+            <th>名称</th>
+            <th>描述</th>
+            <th>所属备份集</th>
+            <th>所属应用集</th>
+            <th>绑定主机</th>
+            <th>绑定路径</th>
+            <th>起始时间</th>
+            <th>结束时间</th>
+            <th>目标类型</th>
+            <th>执行动作</th>
+            <th>删除间隔</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr ng-repeat="policy in policies">
+                <td class="table-td-padding"></td>
+                <td class="table-td-padding">{{policy.name}}</td>
+                <td class="table-td-padding">{{policy.description}}</td>
+                <td class="table-td-padding">{{policy.backupset.name}}</td>
+                <td class="table-td-padding">
+                  <ul class="list-unstyled list-no-margin">
+                    <li ng-repeat="appset in policy.appsets">
+                      {{appset.name}}
+                    </li>
+                  </ul>
+                </td>
+                <td class="table-td-padding">
+                  <ul class="list-unstyled list-no-margin">
+                    <li ng-repeat="host in policy.hosts">
+                      {{host.name}}
+                    </li>
+                  </ul>
+                </td>
+                <td class="table-td-padding">
+                  <ul class="list-unstyled list-no-margin">
+                    <li ng-repeat="path in policy.paths">
+                      {{path.path}}
+                    </li>
+                  </ul>
+                </td>
+                <td class="table-td-padding">{{policy.starttime == 0?'现在':(policy.starttime / 86400).toFixed()+' 天前'}}</td>
+                <td class="table-td-padding">{{policy.endtime == -1?'不限':(policy.endtime / 86400).toFixed()+' 天前'}}</td>
+                <td class="table-td-padding">{{types[policy.target]}}</td>
+                <td class="table-td-padding">{{actions[policy.action]}}</td>
+                <td class="table-td-padding">{{
+                  policy.action == 2?(
+                    policy.step == 0?'全部保留':(
+                      policy.step == -1?'全部删除':(
+                        policy.step/86400
+                      ).toFixed()+' 天'
+                    )
+                  ):'-'
+                }}</td>
+                <td class="table-td-padding" style="text-align:right">
+                    <button type="button" class="btn btn-default btn-xs" ng-click="policyEdit('modify', policy)">
+                        <i class="fa fa-pencil fa-fw"></i> 修改
+                    </button>
+                    <button type="button" class="btn btn-danger btn-xs" ng-click="delete(policy)">
+                        <i class="fa fa-trash fa-fw"></i> 删除
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

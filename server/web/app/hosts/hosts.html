@@ -1,0 +1,114 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">主机管理</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<!-- Modal -->
+<script type="text/ng-template" id="hostModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{type}}主机</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group input-group" uib-tooltip="主机名">
+              <span class="input-group-addon">
+                <i class="fa fa-laptop fa-fw"></i></span>
+              <input ng-model="host.name" class="form-control" placeholder="主机名"/>
+            </div>
+            <div class="form-group input-group" uib-tooltip="IP">
+              <span class="input-group-addon">
+                <i class="fa fa-compass fa-fw"></i>
+              </span>
+              <input ng-model="host.ip" class="form-control" placeholder="IP"/>
+            </div>
+            <div class="form-group input-group" uib-tooltip="应用集">
+              <span class="input-group-addon">
+                <i class="fa fa-cogs fa-fw"></i>
+              </span>
+              <select ng-model="selectedAppSet" class="form-control" ng-options="appSet.id as appSet.name for appSet in appSets"></select>
+            </div>
+            <div class="form-group input-group" uib-tooltip="监控路径">
+              <span class="input-group-addon">
+                <i class="fa fa-folder-open-o fa-fw"></i>
+              </span>
+              <select multiple class="form-control" ng-model="selectedPaths" ng-options="path.id as path.path for path in paths"></select>
+            </div>
+            <div class="notify fadein" ng-class="modalInfoFadein">
+              <div class="alert alert-warning">
+                <i class="fa fa-warning fa-fw"></i> {{modalInfoMsg}}
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="doJob()">
+                <i class="fa fa-fw" ng-class="jobType"></i> {{job}}
+            </button>
+            <button class="btn btn-default" ng-click="cancel()">
+                <i class="fa fa-remove fa-fw"></i> 取消
+            </button>
+        </div>
+</script>
+
+<div class="row">
+    <button type="button" class="btn btn-primary" ng-click="hostEdit('new')">
+        <i class="fa fa-plus fa-fw"></i> 新增
+    </button>
+    <table class="col-lg-12 table table-striped">
+        <thead>
+            <th></th>
+            <th ng-click="orderBy('name')">
+              主机名 <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th ng-click="orderBy('ip')">
+              IP <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th ng-click="orderBy('appset.name')">
+              所属应用集 <i class="fa fa-sort-amount-asc fa-fw"></i>
+            </th>
+            <th>
+              客户端状态
+            </th>
+            <th>监控路径</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr ng-repeat="host in hostSlice | orderBy: order">
+                <td class="table-td-padding"></td>
+                <td class="table-td-padding">{{host.name}}</td>
+                <td class="table-td-padding">{{host.ip}}</td>
+                <td class="table-td-padding">{{host.appset.name}}</td>
+                <td class="table-td-padding">
+                  <span ng-class="getStatus(host.id)==1?'green':'red'">
+                    <i class="fa fa-fw" ng-class="getStatus(host.id)==1?'fa-check':'fa-times'"></i>
+                    {{getStatus(host.id)==1?'运行中':'未运行'}}
+                  </span>
+                </td>
+                <td class="table-td-padding">
+                  <ul class="list-unstyled list-no-margin">
+                    <li ng-repeat="p in host.path">{{p.path}}</li>
+                  </ul>
+                </td>
+                <td style="text-align:right">
+                    <button type="button" class="btn btn-default btn-xs" ng-click="hostEdit('modify', host)">
+                        <i class="fa fa-pencil fa-fw"></i> 修改
+                    </button>
+                    <button type="button" class="btn btn-danger btn-xs" ng-click="delete(host)">
+                        <i class="fa fa-trash fa-fw"></i> 删除
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div ng-show="hosts.length > numPerPage" class="align-to-right">
+        <uib-pagination
+          total-items="hosts.length"
+          max-size="5"
+          previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
+          ng-model="currentPage"
+          boundary-links="true"
+          items-per-page="numPerPage"
+          ></uib-pagination>
+    </div>
+</div>

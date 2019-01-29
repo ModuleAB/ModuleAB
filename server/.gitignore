@@ -6,3 +6,6 @@ swagger/
 cpu-*
 mem-*
 conf/app.conf
+routers/commentsRouter*
+server
+server.tar.gz
